@@ -15,10 +15,10 @@ function Nav(){
     </ol>
   </nav>
 }
-function Article(){
+function Article(props){
   return <article>
-    <h2>Welcome</h2>
-    Hello, WEB
+    <h2>{props.title}</h2>
+    {props.body}
   </article>
 }
 
@@ -27,7 +27,7 @@ function App() {
         <> 
           <Header></Header>
           <Nav></Nav>
-          <Article></Article>
+          <Article title="Welcome" body="Hello, WEB"></Article>
         </>
   );
 }
