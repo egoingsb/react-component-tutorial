@@ -1,4 +1,5 @@
 import './App.css';
+import {useState} from 'react';
 
 function Header(props){
   function clickHandler(event){
@@ -10,11 +11,15 @@ function Header(props){
   </header>
 }
 function Nav(props){
+  function clickHandler(event){
+    event.preventDefault();
+    props.onChangeMode(Number(event.target.dataset.id));
+  }
   let lis = [];
   for(let i=0; i<props.topics.length; i++){
     let t = props.topics[i];
     lis.push(<li key={t.id}>
-      <a href={'/read/'+t.id}>{t.title}</a>
+      <a href={'/read/'+t.id} data-id={t.id} onClick={clickHandler}>{t.title}</a>
     </li>)
   }
   return <nav>
@@ -36,14 +41,35 @@ function App() {
     {id:2, title:'CSS', body:'CSS is ...'},
     {id:3, title:'JavaScript', body:'JavaScript is ...'}
   ];
+  let [mode, setMode] = useState('WELCOME');
+  let [id, setId] = useState(null);
   function onChangeHeaderHandler(){
-    console.log('Welcome');
+    setMode('WELCOME');
+  }
+  function onChangeNavHandler(id){
+    setMode('READ');
+    setId(id);
+  }
+  let articleTag = '';
+  if(mode === 'WELCOME'){
+    articleTag = <Article title="Welcome" body="Hello, WEB"></Article>
+  } else if(mode === 'READ'){
+    let title = '';
+    let body = '';
+    for(let i=0; i<topics.length; i++){
+      if(topics[i].id === id){
+        title = topics[i].title;
+        body = topics[i].body;
+        break;
+      }
+    }
+    articleTag = <Article title={title} body={body}></Article>
   }
   return (
         <> 
           <Header onChangeMode={onChangeHeaderHandler}></Header>
-          <Nav topics={topics}></Nav>
-          <Article title="Welcome" body="Hello, WEB"></Article>
+          <Nav topics={topics} onChangeMode={onChangeNavHandler}></Nav>
+          {articleTag}
         </>
   );
 }
