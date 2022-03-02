@@ -1,6 +1,6 @@
 import './App.css';
 import {useState} from 'react';
-import { Link } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 
 function Header(props){
   function clickHandler(event){
@@ -35,42 +35,23 @@ function Article(props){
     {props.body}
   </article>
 }
-
+function Read(props){
+  return <Article title="Read" body="Hello, Read"></Article>
+}
 function App() {
   let topics = [
     {id:1, title:'HTML', body:'HTML is ...'},
     {id:2, title:'CSS', body:'CSS is ...'},
     {id:3, title:'JavaScript', body:'JavaScript is ...'}
   ];
-  let [mode, setMode] = useState('WELCOME');
-  let [id, setId] = useState(null);
-  function onChangeHeaderHandler(){
-    setMode('WELCOME');
-  }
-  function onChangeNavHandler(id){
-    setMode('READ');
-    setId(id);
-  }
-  let articleTag = '';
-  if(mode === 'WELCOME'){
-    articleTag = <Article title="Welcome" body="Hello, WEB"></Article>
-  } else if(mode === 'READ'){
-    let title = '';
-    let body = '';
-    for(let i=0; i<topics.length; i++){
-      if(topics[i].id === id){
-        title = topics[i].title;
-        body = topics[i].body;
-        break;
-      }
-    }
-    articleTag = <Article title={title} body={body}></Article>
-  }
   return (
         <> 
-          <Header onChangeMode={onChangeHeaderHandler}></Header>
-          <Nav topics={topics} onChangeMode={onChangeNavHandler}></Nav>
-          {articleTag}
+          <Header></Header>
+          <Nav topics={topics}></Nav>
+          <Routes>
+            <Route path="/" element={<Article title="Welcome" body="Hello, WEB"></Article>}></Route>
+            <Route path="/read/:id" element={<Read topics={topics}></Read>}></Route>
+          </Routes>
         </>
   );
 }
