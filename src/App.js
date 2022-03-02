@@ -1,6 +1,6 @@
 import './App.css';
 import {useState} from 'react';
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useParams } from "react-router-dom";
 
 function Header(props){
   function clickHandler(event){
@@ -36,7 +36,17 @@ function Article(props){
   </article>
 }
 function Read(props){
-  return <Article title="Read" body="Hello, Read"></Article>
+  let params = useParams();
+  let title, body = '';
+  for(let i=0; i<props.topics.length; i++){
+    let t = props.topics[i];
+    if(t.id === Number(params.id)){
+      title = t.title;
+      body = t.body;
+      break;
+    }
+  }
+  return <Article title={title} body={body}></Article>
 }
 function App() {
   let topics = [
@@ -55,6 +65,4 @@ function App() {
         </>
   );
 }
-
-
 export default App;
