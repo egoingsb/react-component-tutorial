@@ -1,5 +1,6 @@
 import './App.css';
 import {useState} from 'react';
+import { Link } from "react-router-dom";
 
 function Header(props){
   function clickHandler(event){
@@ -7,7 +8,7 @@ function Header(props){
     props.onChangeMode();
   }
   return <header>
-    <h1><a href="/" onClick={clickHandler}>WEB</a></h1>
+    <h1><Link to="/">WEB</Link></h1>
   </header>
 }
 function Nav(props){
@@ -19,7 +20,7 @@ function Nav(props){
   for(let i=0; i<props.topics.length; i++){
     let t = props.topics[i];
     lis.push(<li key={t.id}>
-      <a href={'/read/'+t.id} data-id={t.id} onClick={clickHandler}>{t.title}</a>
+      <Link to={'/read/'+t.id}>{t.title}</Link>
     </li>)
   }
   return <nav>
