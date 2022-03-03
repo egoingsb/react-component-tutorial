@@ -54,13 +54,15 @@ function UpdateLink(){
     <Link to={'/update/'+params.id}>Update</Link>
   </li>
 }
-function Control(){
+function Control(props){
   let params = useParams();
   let contextUI = null;
   if(params.id){
     contextUI = <>
       <li><Link to={'/update/'+params.id}>Update</Link></li>
-      <li><input type="button" value="Delete"></input></li>
+      <li><input type="button" value="Delete" onClick={()=>{
+        props.onDelete(params.id);
+      }}></input></li>
     </>
   }
   return <ol>
@@ -137,6 +139,16 @@ function App() {
     setTopics(newTopics);
     navigate('/read/'+data.id);
   }
+  function deleteHandler(id){
+    let newTopics = [];
+    for(let i=0; i<topics.length; i++){
+      if(topics[i].id !== Number(id)){
+        newTopics.push(topics[i]);
+      }
+    }
+    setTopics(newTopics);
+    navigate('/');
+  }
   return (
         <> 
           <Header></Header>
@@ -149,7 +161,7 @@ function App() {
           </Routes>
           <Routes>
             <Route path="/" element={<Control></Control>}></Route>
-            <Route path="/read/:id" element={<Control></Control>}></Route>
+            <Route path="/read/:id" element={<Control onDelete={deleteHandler}></Control>}></Route>
           </Routes>
         </>
   );
