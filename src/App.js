@@ -82,6 +82,33 @@ function Create(props){
     </form>
   </article>
 }
+function Update(props){
+  let params = useParams();
+  let _title, _body = '';
+  for(let i=0; i<props.topics.length; i++){
+    let t = props.topics[i];
+    if(t.id === Number(params.id)){
+      _title = t.title;
+      _body = t.body;
+      break;
+    }
+  }
+  let [title, setTitle] = useState(_title);
+  let [body, setBody] = useState(_body);
+  return <article>
+    <form onSubmit={event=>{
+      event.preventDefault();
+      let t = event.target.title.value;
+      let b = event.target.body.value;
+      let i = props.id;
+      props.onUpdate({id:params.id, title:t, body:b});
+    }}>
+      <p><input type="text" name="title" placeholder="Title" value={title} onChange={e=>{setTitle(e.target.value)}} /></p>
+      <p><textarea name="body" placeholder="Body" value={body} onChange={e=>{setBody(e.target.value)}}></textarea></p>
+      <p><input type="submit" value="Create" /></p>
+    </form>
+  </article>
+}
 function App() {
   let [topics, setTopics] = useState([
     {id:1, title:'HTML', body:'HTML is ...'},
@@ -97,6 +124,19 @@ function App() {
     navigate('/read/'+nextId);
     setNextId(nextId+1);
   }
+  function updateHandler(data){
+    let newTopics = [...topics];
+    for(let i=0; i<newTopics.length; i++){
+      let t = newTopics[i];
+      if(t.id === Number(data.id)){
+        t.title = data.title;
+        t.body = data.body;
+        break;
+      }
+    }
+    setTopics(newTopics);
+    navigate('/read/'+data.id);
+  }
   return (
         <> 
           <Header></Header>
@@ -105,6 +145,7 @@ function App() {
             <Route path="/" element={<Article title="Welcome" body="Hello, WEB"></Article>}></Route>
             <Route path="/read/:id" element={<Read topics={topics}></Read>}></Route>
             <Route path="/create" element={<Create onCreate={createHandler}></Create>}></Route>
+            <Route path="/update/:id" element={<Update topics={topics} onUpdate={updateHandler}></Update>}></Route>
           </Routes>
           <Routes>
             <Route path="/" element={<Control></Control>}></Route>
