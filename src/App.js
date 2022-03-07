@@ -1,5 +1,5 @@
 import './App.css';
-import {useState} from 'react';
+import {useState,useEffect} from 'react';
 import { Routes, Route, Link, useParams, useNavigate } from "react-router-dom";
 
 function Header(props){
@@ -112,13 +112,17 @@ function Update(props){
   </article>
 }
 function App() {
-  let [topics, setTopics] = useState([
-    {id:1, title:'HTML', body:'HTML is ...'},
-    {id:2, title:'CSS', body:'CSS is ...'},
-    {id:3, title:'JavaScript', body:'JavaScript is ...'}
-  ]);
+  let [topics, setTopics] = useState([]);
   let navigate = useNavigate();
   let [nextId, setNextId] = useState(4);
+  useEffect(()=>{
+    let callback = async ()=>{
+      const request = await fetch('/topics');
+      const response = await request.json();
+      setTopics(response);
+    }
+    callback();
+  }, []);
   function createHandler(data){
     let newTopics = [...topics];
     newTopics.push({id:nextId, title:data.title, body:data.body});
