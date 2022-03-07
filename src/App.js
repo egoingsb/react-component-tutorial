@@ -108,11 +108,18 @@ function Update(props){
   let [title, setTitle] = useState(_title);
   let [body, setBody] = useState(_body);
   return <article>
-    <form onSubmit={event=>{
+    <form onSubmit={async event=>{
       event.preventDefault();
       let t = event.target.title.value;
       let b = event.target.body.value;
-      let i = props.id;
+      let request = await fetch('/topics/'+params.id, {
+        method:'PUT', 
+        headers:{
+          'Content-Type':'application/json'
+        }, 
+        body:JSON.stringify({title:t, body:b})
+      })
+      let response = await request.json();
       props.onUpdate({id:params.id, title:t, body:b});
     }}>
       <p><input type="text" name="title" placeholder="Title" value={title} onChange={e=>{setTitle(e.target.value)}} /></p>
@@ -137,17 +144,8 @@ function App() {
     refreshTopics();
   }
   function updateHandler(data){
-    let newTopics = [...topics];
-    for(let i=0; i<newTopics.length; i++){
-      let t = newTopics[i];
-      if(t.id === Number(data.id)){
-        t.title = data.title;
-        t.body = data.body;
-        break;
-      }
-    }
-    setTopics(newTopics);
     navigate('/read/'+data.id);
+    refreshTopics();
   }
   function deleteHandler(id){
     let newTopics = [];
