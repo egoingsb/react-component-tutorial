@@ -74,11 +74,19 @@ function Control(props){
 }
 function Create(props){
   return <article>
-    <form onSubmit={event=>{
+    <form onSubmit={async event=>{
       event.preventDefault();
       let t = event.target.title.value;
       let b = event.target.body.value;
-      props.onCreate({title:t, body:b});
+      let request = await fetch('/topics', {
+        method:'POST', 
+        headers:{
+          'Content-Type':'application/json'
+        }, 
+        body:JSON.stringify({title:t, body:b})
+      })
+      let response = await request.json();
+      props.onCreate({id: response.id, title:t, body:b});
     }}>
       <p><input type="text" name="title" placeholder="Title" /></p>
       <p><textarea name="body" placeholder="Body"></textarea></p>
@@ -116,21 +124,17 @@ function Update(props){
 function App() {
   let [topics, setTopics] = useState([]);
   let navigate = useNavigate();
-  let [nextId, setNextId] = useState(4);
+  let refreshTopics = async ()=>{
+    const request = await fetch('/topics');
+    const response = await request.json();
+    setTopics(response);
+  }
   useEffect(()=>{
-    let callback = async ()=>{
-      const request = await fetch('/topics');
-      const response = await request.json();
-      setTopics(response);
-    }
-    callback();
+    refreshTopics();
   }, []);
   function createHandler(data){
-    let newTopics = [...topics];
-    newTopics.push({id:nextId, title:data.title, body:data.body});
-    setTopics(newTopics);
-    navigate('/read/'+nextId);
-    setNextId(nextId+1);
+    navigate('/read/'+data.id);
+    refreshTopics();
   }
   function updateHandler(data){
     let newTopics = [...topics];
