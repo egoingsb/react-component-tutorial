@@ -147,15 +147,13 @@ function App() {
     navigate('/read/'+data.id);
     refreshTopics();
   }
-  function deleteHandler(id){
-    let newTopics = [];
-    for(let i=0; i<topics.length; i++){
-      if(topics[i].id !== Number(id)){
-        newTopics.push(topics[i]);
-      }
-    }
-    setTopics(newTopics);
+  async function deleteHandler(id){
+    let request = await fetch('/topics/'+id, {
+      method:'DELETE'
+    })
+    let response = await request.json();
     navigate('/');
+    refreshTopics();
   }
   return (
         <> 
