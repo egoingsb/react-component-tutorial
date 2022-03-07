@@ -37,15 +37,17 @@ function Article(props){
 }
 function Read(props){
   let params = useParams();
-  let title, body = '';
-  for(let i=0; i<props.topics.length; i++){
-    let t = props.topics[i];
-    if(t.id === Number(params.id)){
-      title = t.title;
-      body = t.body;
-      break;
+  let [title, setTitle] = useState(null);
+  let [body, setBody] = useState(null);
+  useEffect(()=>{
+    let callback = async ()=>{
+      const request = await fetch('/topics/'+params.id);
+      const response = await request.json();
+      setTitle(response.title);
+      setBody(response.body);
     }
-  }
+    callback();
+  }, [params.id]);
   return <Article title={title} body={body}></Article>
 }
 function UpdateLink(){
