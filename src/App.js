@@ -1,5 +1,5 @@
 import './App.css';
-import {useState, createContext, useContext} from 'react';
+import {useState, createContext, useContext, useReducer} from 'react';
 import { Routes, Route, Link, useParams, useNavigate } from "react-router-dom";
 const defaultTheme = {
   color:'#E84855'
@@ -119,41 +119,57 @@ function Update(props){
 }
 function App() {
   const theme = useContext(themeContext);
-  let [topics, setTopics] = useState([
+  // let [topics, setTopics] = useState([
+  //   {id:1, title:'HTML', body:'HTML is ...'},
+  //   {id:2, title:'CSS', body:'CSS is ...'},
+  //   {id:3, title:'JavaScript', body:'JavaScript is ...'}
+  // ]);
+  const initTopics = [
     {id:1, title:'HTML', body:'HTML is ...'},
     {id:2, title:'CSS', body:'CSS is ...'},
     {id:3, title:'JavaScript', body:'JavaScript is ...'}
-  ]);
+  ]
+  function reducer(oldState, action){
+    let newState = [...oldState];
+    switch(action.type){
+      case 'CREATE':
+        newState.push(action.topic);
+        break;
+      case 'UPDATE':
+        for(let i=0; i<newState.length; i++){
+          let t = newState[i];
+          if(t.id === Number(action.topic.id)){
+            t.title = action.topic.title;
+            t.body = action.topic.body;
+            break;
+          }
+        }
+        break;
+      case 'DELETE':
+        newState = [];
+        for(let i=0; i<oldState.length; i++){
+          if(oldState[i].id !== Number(action.id)){
+            newState.push(oldState[i]);
+          }
+        }
+        break;
+    }
+    return newState;
+  }
+  const [topics, dispatch] = useReducer(reducer, initTopics);
   let navigate = useNavigate();
   let [nextId, setNextId] = useState(4);
   function createHandler(data){
-    let newTopics = [...topics];
-    newTopics.push({id:nextId, title:data.title, body:data.body});
-    setTopics(newTopics);
+    dispatch({type:'CREATE', topic:{id:nextId, title:data.title, body:data.body}});
     navigate('/read/'+nextId);
     setNextId(nextId+1);
   }
   function updateHandler(data){
-    let newTopics = [...topics];
-    for(let i=0; i<newTopics.length; i++){
-      let t = newTopics[i];
-      if(t.id === Number(data.id)){
-        t.title = data.title;
-        t.body = data.body;
-        break;
-      }
-    }
-    setTopics(newTopics);
+    dispatch({type:'UPDATE', topic:data});
     navigate('/read/'+data.id);
   }
   function deleteHandler(id){
-    let newTopics = [];
-    for(let i=0; i<topics.length; i++){
-      if(topics[i].id !== Number(id)){
-        newTopics.push(topics[i]);
-      }
-    }
-    setTopics(newTopics);
+    dispatch({type:'DELETE', id:id});
     navigate('/');
   }
   return (
