@@ -1,15 +1,30 @@
 import './App.css';
-import {useState} from 'react';
+import {useReducer} from 'react';
 function App() {
-  const [count, setCount] = useState(0);
+  function reducer(oldState, action){
+    let newState = oldState;
+    switch(action.type){
+      case 'INCREASE':
+        newState = oldState+1;
+        break;
+      case 'DECREASE':
+        newState = oldState-1;
+        break;
+      case 'RESET':
+        newState = 0;
+        break;
+    }
+    return newState;
+  }
+  const [count, dispatch] = useReducer(reducer, 0);
   function increaseHandler(){
-    setCount(count+1);
+    dispatch({type:'INCREASE'});
   }
   function decreaseHandler(){
-    setCount(count-1);
+    dispatch({type:'DECREASE'});
   }
   function resetHandler(){
-    setCount(0);
+    dispatch({type:'RESET'});
   }
   return (
        <div>
