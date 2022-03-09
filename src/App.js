@@ -1,5 +1,10 @@
 import './App.css';
-
+import {createContext, useContext} from 'react';
+const theme = {
+  color:'red',
+  backgroundColor:'blue'
+}
+const themeContext = createContext(theme);
 function App() {
   return (
         <>
@@ -15,19 +20,23 @@ function Child1(){
   </div>
 }
 function Child2(){
-  return <div>
+  const theme = useContext(themeContext);
+  return <div style={theme}>
     <h1>2</h1>
     <Child3></Child3>
   </div>
 }
 function Child3(){
-  return <div>
-    <h1>3</h1>
-    <Child4></Child4>
-  </div>
+  const theme = useContext(themeContext);
+  return <themeContext.Provider value={{...theme, color:'yellow'}}><div style={theme}>
+      <h1>3</h1>
+      <Child4></Child4>
+    </div>
+  </themeContext.Provider>
 }
 function Child4(){
-  return <div>
+  const theme = useContext(themeContext);
+  return <div style={theme}>
     <h1>4</h1>
   </div>
 }
