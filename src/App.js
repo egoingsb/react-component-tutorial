@@ -1,17 +1,22 @@
 import './App.css';
-import {useState} from 'react';
+import {useState, createContext, useContext} from 'react';
 import { Routes, Route, Link, useParams, useNavigate } from "react-router-dom";
-
+const defaultTheme = {
+  color:'#E84855'
+}
+const themeContext = createContext(defaultTheme);
 function Header(props){
+  const theme = useContext(themeContext);
   function clickHandler(event){
     event.preventDefault();
     props.onChangeMode();
   }
   return <header>
-    <h1><Link to="/">WEB</Link></h1>
+    <h1><Link to="/" style={{color:theme.color}}>WEB</Link></h1>
   </header>
 }
 function Nav(props){
+  const theme = useContext(themeContext);
   function clickHandler(event){
     event.preventDefault();
     props.onChangeMode(Number(event.target.dataset.id));
@@ -20,7 +25,7 @@ function Nav(props){
   for(let i=0; i<props.topics.length; i++){
     let t = props.topics[i];
     lis.push(<li key={t.id}>
-      <Link to={'/read/'+t.id}>{t.title}</Link>
+      <Link to={'/read/'+t.id} style={{color:theme.color}}>{t.title}</Link>
     </li>)
   }
   return <nav>
@@ -30,7 +35,8 @@ function Nav(props){
   </nav>
 }
 function Article(props){
-  return <article>
+  const theme = useContext(themeContext);
+  return <article style={theme}>
     <h2>{props.title}</h2>
     {props.body}
   </article>
@@ -112,6 +118,7 @@ function Update(props){
   </article>
 }
 function App() {
+  const theme = useContext(themeContext);
   let [topics, setTopics] = useState([
     {id:1, title:'HTML', body:'HTML is ...'},
     {id:2, title:'CSS', body:'CSS is ...'},
@@ -150,20 +157,22 @@ function App() {
     navigate('/');
   }
   return (
-        <> 
+        <div style={{color:theme.color}}> 
           <Header></Header>
           <Nav topics={topics}></Nav>
-          <Routes>
-            <Route path="/" element={<Article title="Welcome" body="Hello, WEB"></Article>}></Route>
-            <Route path="/read/:id" element={<Read topics={topics}></Read>}></Route>
-            <Route path="/create" element={<Create onCreate={createHandler}></Create>}></Route>
-            <Route path="/update/:id" element={<Update topics={topics} onUpdate={updateHandler}></Update>}></Route>
-          </Routes>
+          <themeContext.Provider value={{color:'black'}}>
+            <Routes>
+              <Route path="/" element={<Article title="Welcome" body="Hello, WEB"></Article>}></Route>
+              <Route path="/read/:id" element={<Read topics={topics}></Read>}></Route>
+              <Route path="/create" element={<Create onCreate={createHandler}></Create>}></Route>
+              <Route path="/update/:id" element={<Update topics={topics} onUpdate={updateHandler}></Update>}></Route>
+            </Routes>
+          </themeContext.Provider>
           <Routes>
             <Route path="/" element={<Control></Control>}></Route>
             <Route path="/read/:id" element={<Control onDelete={deleteHandler}></Control>}></Route>
           </Routes>
-        </>
+        </div>
   );
 }
 export default App;
